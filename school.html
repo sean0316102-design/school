@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北市立中正國中｜時光與卓越的敘事曲</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --accent-gold: #c5a059;
+            --text-light: #e0e0e0;
+            --frame-white: #ffffff;
+            --letterbox-height: 40px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* --- 膠卷質感與電影黑邊 --- */
+        .film-grain {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_filmgrain.png');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 9999;
+            animation: grain 0.5s steps(10) infinite;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-1%, -1%); }
+            30% { transform: translate(1%, 1%); }
+            50% { transform: translate(-0.5%, 1.5%); }
+            70% { transform: translate(1.5%, -0.5%); }
+            90% { transform: translate(-1%, 0.5%); }
+        }
+
+        .letterbox {
+            position: fixed;
+            left: 0; width: 100%;
+            height: var(--letterbox-height);
+            background: #000;
+            z-index: 1000;
+        }
+        .letterbox.top { top: 0; }
+        .letterbox.bottom { bottom: 0; }
+
+        /* --- 視差滾動首頁 --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 120%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
+                        url('https://raw.githubusercontent.com/sean0316102-design/school/main/photo%201.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            will-change: transform;
+        }
+
+        .hero-content h1 {
+            font-family: 'Noto Serif TC', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: var(--accent-gold);
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            letter-spacing: 0.3rem;
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+        }
+
+        /* --- 新增：Hero 區塊按鈕 --- */
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.5s ease forwards 0.8s;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-cinematic {
+            padding: 12px 30px;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-cinematic:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
+        }
+
+        /* --- 內容章節佈局 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .narrative-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 150px;
+            gap: 60px;
+        }
+
+        .narrative-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .content-box {
+            flex: 1;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .content-box h2 {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-box p {
+            font-size: 1.1rem;
+            color: #bbb;
+            text-align: justify;
+        }
+
+        /* --- 實體畫框排版 --- */
+        .image-box {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+            transition-delay: 0.2s;
+        }
+
+        .polaroid {
+            background: var(--frame-white);
+            padding: 15px 15px 60px 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transform: rotate(-3deg);
+            max-width: 90%;
+            transition: transform 0.5s ease;
+        }
+
+        .narrative-section.reverse .polaroid {
+            transform: rotate(3deg);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            filter: sepia(20%) contrast(1.1);
+            display: block;
+        }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        /* --- 揭示效果激活 --- */
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 頁尾修正 --- */
+        footer {
+            padding: 80px 0;
+            text-align: center;
+            border-top: 1px solid rgba(197, 160, 89, 0.2);
+            background: #050505;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent-gold);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+        }
+
+        /* --- 響應式設計 --- */
+        @media (max-width: 768px) {
+            .narrative-section, .narrative-section.reverse {
+                flex-direction: column;
+                gap: 40px;
+                margin-bottom: 80px;
+            }
+            .polaroid {
+                transform: rotate(0deg) !important;
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .container {
+                padding: 60px 20px;
+            }
+            .cta-group {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="film-grain"></div>
+    <div class="letterbox top"></div>
+    <div class="letterbox bottom"></div>
+
+    <section class="hero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-content">
+            <h1>中正國中</h1>
+            <p>淬鍊時光的教育殿堂</p>
+            <div class="cta-group">
+                <a href="https://www.ccjhs.tp.edu.tw/" target="_blank" class="btn-cinematic">訪問官網</a>
+                <a href="https://www.facebook.com/p/%E5%8F%B0%E5%8C%97%E5%B8%82%E7%AB%8B%E4%B8%AD%E6%AD%A3%E5%9C%8B%E4%B8%AD-100057260417556/" target="_blank" class="btn-cinematic">FACEBOOK</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="narrative-section">
+            <div class="image-box reveal">
+                <div class="polaroid">
+                    <img src="https://raw.githubusercontent.com/sean0316102-design/school/main/photo%202.jpg" alt="校園光影">
+                </div>
+            </div>
+            <div class="content-box reveal">
+                <h2>紅磚牆下的思想起</h2>
+                <p>漫步在校園的長廊，陽光斜射過洗石子的階梯。這裡不僅僅是知識的傳遞所，更是靈魂覺醒的發源地。每一塊紅磚都刻劃著學子們奮鬥的痕跡，在靜謐的午後，訴說著關於成長的沈穩與厚重。</p>
+            </div>
+        </section>
+
+        <section class="narrative-section reverse">
+            <div class="image-box reveal">
+                <div class="polaroid">
+                    <img src="https://raw.githubusercontent.com/sean0316102-design/school/main/photo%203.jpg" alt="卓越追求">
+                </div>
+            </div>
+            <div class="content-box reveal">
+                <h2>卓越，是一場修煉</h2>
+                <p>我們追求的不只是成績單上的數字，而是面對未知挑戰時的從容。在中正的歲月裡，學子們在嚴謹與自由之間尋找平衡，將平凡的練習轉化為不凡的技藝。卓越，在這裡已內化為一種呼吸的節奏。</p>
+            </div>
+        </section>
+
+        <section class="narrative-section">
+            <div class="image-box reveal">
+                <div class="polaroid">
+                    <img src="https://raw.githubusercontent.com/sean0316102-design/school/main/photo%204.jpg" alt="多元發展">
+                </div>
+            </div>
+            <div class="content-box reveal">
+                <h2>共鳴的交響詩</h2>
+                <p>球場上的汗水、音樂廳裡的琴聲、實驗室中的驚呼，織就了中正最動人的多聲部樂章。我們深信，每位孩子都是獨特的星辰，校園提供了一整片夜空，讓每一種光芒都能找到閃耀的角度。</p>
+            </div>
+        </section>
+
+        <section class="narrative-section reverse">
+            <div class="image-box reveal">
+                <div class="polaroid">
+                    <img src="https://raw.githubusercontent.com/sean0316102-design/school/main/photo%205.jpg" alt="未來展望">
+                </div>
+            </div>
+            <div class="content-box reveal">
+                <h2>向未來的地平線啟航</h2>
+                <p>當時光流轉，少年們終將離開這片港灣。但帶走的，是那份終身不渝的自律與對世界的熱情。中正國中是起點，也是永恆的精神家園，支撐著每一位校友，在世界的各個角落勇敢前行。</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://www.ccjhs.tp.edu.tw/" target="_blank">官方網站</a>
+            <a href="https://www.facebook.com/p/%E5%8F%B0%E5%8C%97%E5%B8%82%E7%AB%8B%E4%B8%AD%E6%AD%A3%E5%9C%8B%E4%B8%AD-100057260417556/" target="_blank">官方臉書</a>
+        </div>
+        <p>翊華程式設計 | 網頁與作品集製作</p>
+    </footer>
+
+    <script>
+        // --- 視差滾動效果 (Parallax) ---
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const heroBg = document.getElementById('heroBg');
+            heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px)';
+        });
+
+        // --- 滾動揭示動畫 (Scroll Reveal) ---
+        const observerOptions = {
+            threshold: 0.2
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        document.querySelectorAll('.narrative-section').forEach(section => {
+            const elements = section.querySelectorAll('.reveal');
+            elements.forEach((el, index) => {
+                el.style.transitionDelay = (index * 0.3) + 's';
+            });
+        });
+    </script>
+</body>
+</html>
