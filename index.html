@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台北市立中正國中｜時光與卓越的敘事曲</title>
     
+    <!-- PWA 核心設定 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a"> <!-- 配合你的 --primary-dark 顏色 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
@@ -102,7 +109,7 @@
             margin-bottom: 2.5rem;
         }
 
-        /* --- 新增：Hero 區塊按鈕 --- */
+        /* --- Hero 區塊按鈕 --- */
         .cta-group {
             display: flex;
             gap: 20px;
@@ -288,6 +295,7 @@
     </section>
 
     <div class="container">
+        <!-- 內容章節省略，保持不變 -->
         <section class="narrative-section">
             <div class="image-box reveal">
                 <div class="polaroid">
@@ -346,18 +354,26 @@
     </footer>
 
     <script>
+        // --- PWA Service Worker 註冊 ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('PWA 已啟用！', reg))
+                    .catch(err => console.log('PWA 註冊失敗：', err));
+            });
+        }
+
         // --- 視差滾動效果 (Parallax) ---
         window.addEventListener('scroll', function() {
             const scrolled = window.pageYOffset;
             const heroBg = document.getElementById('heroBg');
-            heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px)';
+            if (heroBg) {
+                heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px)';
+            }
         });
 
         // --- 滾動揭示動畫 (Scroll Reveal) ---
-        const observerOptions = {
-            threshold: 0.2
-        };
-
+        const observerOptions = { threshold: 0.2 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -366,9 +382,7 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
-        });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         document.querySelectorAll('.narrative-section').forEach(section => {
             const elements = section.querySelectorAll('.reveal');
